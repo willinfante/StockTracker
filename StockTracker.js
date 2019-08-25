@@ -26,15 +26,18 @@ if(process.argv[2] == "-m") conoutm = true;
 
 function printstock(s, p, r, d) {
 	
-	fs.access("/home/pi/Documents/StockTracker/" + s +'.txt', error => {
+	fs.access("/home/pi/Documents/StockTracker/ShareData/" + s +".txt", error => {
    		 if (!error) {
+			console.log('good');
+			fs.readFile('/home/pi/Documents/StockTracker/ShareData/' + s +'.txt', (err, data) => {
 
-			fs.readFile('/home/pi/Documents/StockTracker/' + s +'.txt', (err, data) => {
+				console.log(data);
 				if (err) {
 	    				console.error(err);
 	    				return;
 	  			}
 	  			var vall = parseInt(p) * parseInt(data);
+ 				console.log(vall);
 				console.log("STOCK       PRICE       CHANGE      VALUE");
 		  		console.log(s + "       " + p + "         " + r + "          " + vall.toString());
 			});
@@ -43,14 +46,33 @@ function printstock(s, p, r, d) {
 
 		    rl.question("You do not currently have an entry for the number of shares owned in this company. Create one?(yes/no)",function(q){
 			if(q == "yes"){
-				rl.question("How Many Shares Do You Own in " + s, function(num){
+				rl.question("How Many Shares Do You Own in " + s + ":", function(num){
+					/*
+					var writeStream = fs.createWriteStream('/ShareData/' + s + ".txt");
 
-					fs.writeFile(s + ".txt", num.toString());
-					console.log('fixed.');	
-					printstock(s,p,r,d);
+					writeStream.write(num, 'utf8')
+					writeStream.on('finish', () => {
+  					  console.log('Data Entry Complete.');
+					});
+
+					writeStream.end();
+				 	printstock(s,p,r,d);
+					*/
+					fs.writeFile('/ShareData/' + s + '.txt', num, 'utf8', function(){
+						printstock(s,p,r,d);
+
+					});
+				/*
+					fs.writeFile('/ShareData/' + s + '.txt', num, (err) => {
+						if(err) throw err;
+
+						printstock(s,p,r,d);
+					});
+
+				*/
 				});
 			}
-			else if(q == "no");
+			else if(q == "no")
 			{
 				console.log("Writing This stock to the ignorefile so that this message doesn't show again. If You ever want to change this, then modify the 'ignorefile.txt' file");
 				fs.writeFile("ignorefile.txt", s);
@@ -61,7 +83,7 @@ function printstock(s, p, r, d) {
 				return;
 			}
 		    });
-
+		}
 	});
 }
 
