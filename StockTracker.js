@@ -1,5 +1,6 @@
 var https = require('https');  //Used to Make Requests to yahoo finance
 var colors = require('ansi-256-colors'); //Used to add color to text printed in console
+var fs = require('fs')
 
 //The API we are making requests to
 var command = "https:\/\/query1.finance.yahoo.com/v7/finance/quote?fields=symbol,longName,shortName,regularMarketPrice,regularMarketTime,regularMarketChange,regularMarketDayHigh,regularMarketDayLow,regularMarketPrice,regularMarketOpen,regularMarketVolume,averageDailyVolume3Month,marketCap,bid,ask,dividendYield,dividendsPerShare,exDividendDate,trailingPE,priceToSales,tarketPricecMean&formatted=false&symbols="
