@@ -26,8 +26,8 @@ function printstock(s, p, r, d) {
 	    return
 	  }
 	  var vall = parseInt(p) * parseInt(data);
-	  console.log("STOCK       PRICE       CHANGE      DIVIDENDS      VALUE");
-	  console.log(symbol + "    " + price + "      " + regmktch + "     " + divsps + "      " + vall.toString());
+	  console.log("STOCK       PRICE       CHANGE      VALUE");
+	  console.log(s + "       " + p + "         " + r + "          " + vall.toString());
 	});
 
 }
