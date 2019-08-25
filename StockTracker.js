@@ -15,6 +15,61 @@ function isPositive(num) {
   return num >= 0;
 }
 
+function serve(){
+	
+
+	app.listen(8080);
+	app.get('/', function(req, res){
+
+   		res.sendFile(__dirname + "/index.html");
+
+	});
+	app.get('/request', function(req, res) {
+		currentRequest = true;
+
+		var s = req.query.symbol;
+		getData(0, s, function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+			if(currentRequest == false) return;
+
+			res.setHeader('content-type', 'text/plain');
+
+			res.send("STOCK REPORT - " + symbol + "(" + short + ")\n" + "MARKET PRICE : " + price + "\n" + "OPEN : " + open + "\n" + "HIGH : " + high + "\n" +"P/E RATIO : " + pe + "\n" + "MARKET CAP : " + mktcp + "\n" +"MARKET CHANGE(DAY) : " + regmktch + "\n" +"ASK: " + ask + "\n" + "BID : " + bid + "\n" +   "MARKET VOLUME : " + mktvol + "\n" +       "PREVIOUS CLOSE PRICE : " + prevClose  + "\n" +      "DIVIDENDS PER SHARE : " + divps + "\n" +     "REVENUE : " + rev + "\n" +      "SHARES OUTSTANDING : " + sO + "\n" +    "TRADABLE : " + tradable + "\n" +     "------HISTORICAL-------"  + "\n" +     "FIFTY-TWO WEEK HIGH : " + ftwh + "\n" +      "FIFTY-TWO WEEK HIGH CHANGE : " + ftwhc + "\n" +      "FIFTY-TWO WEEK HIGH CHANGE PERCENT : " + ftwhcp + "\n" +    "FIFTY-TWO WEEK LOW : " + ftwl + "\n" +    "FIFTY-TWO WEEK LOW CHANGE : " + ftwlc  + "\n" +  "FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
+		});	
+	});
+	
+}
+
+function conoutf() {
+	
+	getData(0, data, function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+	
+			  console.log("STOCK REPORT - " + symbol + "(" + short + ")");
+			  console.log("MARKET PRICE : " + price);
+			  console.log("OPEN : " + open);
+			  console.log("HIGH : " + high);
+			  console.log("P/E RATIO : " + pe);
+			  console.log("MARKET CAP : " + mktcp);
+			  console.log("MARKET CHANGE(DAY) : " + regmktch);
+			  console.log("ASK: " + ask);
+			  console.log("BID : " + bid);
+			  console.log("MARKET VOLUME : " + mktvol);
+			  console.log("PREVIOUS CLOSE PRICE : " + prevClose);
+			  console.log("DIVIDENDS PER SHARE : " + divps);
+			  console.log("REVENUE : " + rev);
+			  console.log("SHARES OUTSTANDING : " + sO);
+			  console.log("TRADABLE : " + tradable + "\n");
+			  console.log("------HISTORICAL-------");
+			  console.log("FIFTY-TWO WEEK HIGH : " + ftwh);
+			  console.log("FIFTY-TWO WEEK HIGH CHANGE : " + ftwhc);
+			  console.log("FIFTY-TWO WEEK HIGH CHANGE PERCENT : " + ftwhcp);
+			  console.log("FIFTY-TWO WEEK LOW : " + ftwl);
+			  console.log("FIFTY-TWO WEEK LOW CHANGE : " + ftwlc);
+			  console.log("FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
+	});
+}
+	
+	
+	
 function getData(num, symb, callback){
 	https.get(command + symb,(resp) =>{
 
@@ -58,52 +113,15 @@ function getData(num, symb, callback){
 }
 
 
-         getData(0, data, function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
 
-         	  if(conout == true) {
-			  console.log("STOCK REPORT - " + symbol + "(" + short + ")");
-			  console.log("MARKET PRICE : " + price);
-			  console.log("OPEN : " + open);
-			  console.log("HIGH : " + high);
-			  console.log("P/E RATIO : " + pe);
-			  console.log("MARKET CAP : " + mktcp);
-			  console.log("MARKET CHANGE(DAY) : " + regmktch);
-			  console.log("ASK: " + ask);
-			  console.log("BID : " + bid);
-			  console.log("MARKET VOLUME : " + mktvol);
-			  console.log("PREVIOUS CLOSE PRICE : " + prevClose);
-			  console.log("DIVIDENDS PER SHARE : " + divps);
-			  console.log("REVENUE : " + rev);
-			  console.log("SHARES OUTSTANDING : " + sO);
-			  console.log("TRADABLE : " + tradable + "\n");
-			  console.log("------HISTORICAL-------");
-			  console.log("FIFTY-TWO WEEK HIGH : " + ftwh);
-			  console.log("FIFTY-TWO WEEK HIGH CHANGE : " + ftwhc);
-			  console.log("FIFTY-TWO WEEK HIGH CHANGE PERCENT : " + ftwhcp);
-			  console.log("FIFTY-TWO WEEK LOW : " + ftwl);
-			  console.log("FIFTY-TWO WEEK LOW CHANGE : " + ftwlc);
-			  console.log("FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
-	 	} else {
-		 	 app.listen(8080);
-			 app.get('/', function(req, res){
-
-   				 res.sendFile(__dirname + "/index.html");
-
-			 });
-			 app.get('/request', function(req, res) {
-			  	currentRequest = true;
-
-			  	var s = req.query.symbol;
-
-			        if(currentRequest == false) return;
-
-				res.setHeader('content-type', 'text/plain');
-
-				res.send("STOCK REPORT - " + symbol + "(" + short + ")\n" + "MARKET PRICE : " + price + "\n" + "OPEN : " + open + "\n" + "HIGH : " + high + "\n" +"P/E RATIO : " + pe + "\n" + "MARKET CAP : " + mktcp + "\n" +"MARKET CHANGE(DAY) : " + regmktch + "\n" +"ASK: " + ask + "\n" + "BID : " + bid + "\n" +   "MARKET VOLUME : " + mktvol + "\n" +       "PREVIOUS CLOSE PRICE : " + prevClose  + "\n" +      "DIVIDENDS PER SHARE : " + divps + "\n" +     "REVENUE : " + rev + "\n" +      "SHARES OUTSTANDING : " + sO + "\n" +    "TRADABLE : " + tradable + "\n" +     "------HISTORICAL-------"  + "\n" +     "FIFTY-TWO WEEK HIGH : " + ftwh + "\n" +      "FIFTY-TWO WEEK HIGH CHANGE : " + ftwhc + "\n" +      "FIFTY-TWO WEEK HIGH CHANGE PERCENT : " + ftwhcp + "\n" +    "FIFTY-TWO WEEK LOW : " + ftwl + "\n" +    "FIFTY-TWO WEEK LOW CHANGE : " + ftwlc  + "\n" +  "FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
-			});
-		 }
-              });
-
+if (conout == true) {
+	
+	conoutf();
+	
+} else {
+	
+	serve();
+}
 
 
 
