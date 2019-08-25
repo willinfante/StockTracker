@@ -20,7 +20,7 @@ if(process.argv[2] == "-m") conoutm = true;
 
 function printstock(s, p, r, d) {
 	
-	fs.readFile('/home/pi/Documents/StockTracker' + s +'.txt', (err, data) => {
+	fs.readFile('/home/pi/Documents/StockTracker/' + s +'.txt', (err, data) => {
 	  if (err) {
 	    console.error(err)
 	    return
