@@ -1,6 +1,12 @@
 var https = require('https');  //Used to Make Requests to yahoo finance
 var colors = require('ansi-256-colors'); //Used to add color to text printed in console
-var fs = require('fs')
+var fs = require('fs');
+const readline = require("readline");
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
 
 //The API we are making requests to
 var command = "https:\/\/query1.finance.yahoo.com/v7/finance/quote?fields=symbol,longName,shortName,regularMarketPrice,regularMarketTime,regularMarketChange,regularMarketDayHigh,regularMarketDayLow,regularMarketPrice,regularMarketOpen,regularMarketVolume,averageDailyVolume3Month,marketCap,bid,ask,dividendYield,dividendsPerShare,exDividendDate,trailingPE,priceToSales,tarketPricecMean&formatted=false&symbols="
@@ -19,18 +25,44 @@ if(process.argv[2] == "-m") conoutm = true;
 //////////////////////////////////////
 
 function printstock(s, p, r, d) {
-	
-	fs.readFile('/home/pi/Documents/StockTracker/' + s +'.txt', (err, data) => {
-	  if (err) {
-	    console.error(err)
-	    return
-	  }
-	  var vall = parseInt(p) * parseInt(data);
-	  console.log("STOCK       PRICE       CHANGE      VALUE");
-	  console.log(s + "       " + p + "         " + r + "          " + vall.toString());
-	});
+	if (fs.existsSync('/home/pi/Documents/StockTracker/' + s +'.txt') == true) {
 
+			fs.readFile('/home/pi/Documents/StockTracker/' + s +'.txt', (err, data) => {
+				if (err) {
+	    				console.error(err);
+	    				return;
+	  			}
+	  			var vall = parseInt(p) * parseInt(data);
+				console.log("STOCK       PRICE       CHANGE      VALUE");
+		  		console.log(s + "       " + p + "         " + r + "          " + vall.toString());
+			});
+	} else {
+
+	    rl.question("You do not currently have an entry for the number of shares owned in this company. Create one?(yes/no)",function(q){
+		if(q == "yes"){
+			rl.question("How Many Shares Do You Own in " + s, function(num){
+
+				fs.writeFile(s + ".txt", num.toString());
+				console.log('fixed.');	
+				printstock(s,p,r,d);
+			});
+		}
+		else if(q == "no");
+		{
+			console.log("Writing This stock to the ignorefile so that this message doesn't show again. If You ever want to change this, then modify the 'ignorefile.txt' file");
+			fs.writeFile("ignorefile.txt", s);
+		}
+		else {
+
+			console.log("Error On Input. Try again.");
+			return;
+		}
+	    });
+
+	}
 }
+
+
 function serve(){
 
 	app.listen(8080); //Start Listening For Request On Port 8080
@@ -59,9 +91,13 @@ function serve(){
 }
 
 function conoutmult() {
-	var array = [process.argv[3].toString(), process.argv[4].toString()];
-	
+	var array = [];
+
+        for (var i = 3; i < process.argv.length; i++){
+		array.push(process.argv[i]);
+	}
 	for(var symb of array){
+		console.log(symb);
 		//Get the data from the parameters in the console
 		getData(0, symb, function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
 
