@@ -3,9 +3,9 @@ PREREQUISITES
 
 > pi@raspberry:~# npm install
 
-```
+
 HOW TO USE/INSTALL 
-```
+
 
 > pi@raspberry:~# git clone https://github.com/willinfante/StockTracker.git 
 
@@ -21,12 +21,4 @@ To Print to the Console
 
 if you want to watch it live in the console, then
 
->  pi@raspberry:~/StockTracker$ watch node StockTracker.js -c [INSERT STOCK SYMBOL HERE]
-
-
-```
-COMING SOON
-```
-
-
-Watching Multiple Stocks in the Console
+>  pi@raspberry:~/StockTracker$ watch node StockTracker.js -c [INSERT STOCK SYMBOL]
