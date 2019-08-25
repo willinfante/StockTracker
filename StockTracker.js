@@ -5,17 +5,31 @@ var colors = require('ansi-256-colors'); //Used to add color to text printed in 
 var command = "https:\/\/query1.finance.yahoo.com/v7/finance/quote?fields=symbol,longName,shortName,regularMarketPrice,regularMarketTime,regularMarketChange,regularMarketDayHigh,regularMarketDayLow,regularMarketPrice,regularMarketOpen,regularMarketVolume,averageDailyVolume3Month,marketCap,bid,ask,dividendYield,dividendsPerShare,exDividendDate,trailingPE,priceToSales,tarketPricecMean&formatted=false&symbols="
 var express = require('express'); //Used to create the Server
 var app = express(); 
-var conout = true;  //The variable that decides wheather to do the server or print to the console
+var conout = false;  //The variable that decides wheather to do the server or print to the console
+var conoutm = false;
 
-if(process.argv[2] == null) conout = false; //If the command entered doesn't have the paramaters needed to print to the console, don't print to the console
+if(process.argv[2] == "-c") conout = true; //If the command entered doesn't have the paramaters needed to print to the console, don't print to the console
 
-
+if(process.argv[2] == "-m") conoutm = true; 
 //////Going to be used for colors later
 //function isPositive(num) {
 //  return num >= 0;
 //}
 //////////////////////////////////////
 
+function printstock(s, p, r, d) {
+	
+	fs.readFile('/home/pi/Documents/StockTracker' + s +'.txt', (err, data) => {
+	  if (err) {
+	    console.error(err)
+	    return
+	  }
+	  var vall = parseInt(p) * parseInt(data);
+	  console.log("STOCK       PRICE       CHANGE      DIVIDENDS      VALUE");
+	  console.log(symbol + "    " + price + "      " + regmktch + "     " + divsps + "      " + vall.toString());
+	});
+
+}
 function serve(){
 
 	app.listen(8080); //Start Listening For Request On Port 8080
@@ -42,6 +56,20 @@ function serve(){
 		});
 	});
 }
+
+function conoutmult() {
+	var array = [process.argv[3].toString(), process.argv[4].toString()];
+	
+	for(var symb of array){
+		//Get the data from the parameters in the console
+		getData(0, symb, function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+
+			    printstock(symbol, price, regmktch,	divps);
+
+		});
+	}
+}
+
 
 function conoutf() {
 
@@ -130,6 +158,11 @@ if (conout == true) {
     //Print out the data the user requested in the console
     conoutf();
 
+} else if(conoutm == true) {
+	
+     //Print out multiple Stocks
+     conoutmult();
+ 	
 } else { //If we dont want to print to the console ...
 
     serve(); //Start The Server
