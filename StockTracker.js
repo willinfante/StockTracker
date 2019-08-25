@@ -28,7 +28,6 @@ function printstock(s, p, r, d) {
 	
 	fs.access("/home/pi/Documents/StockTracker/ShareData/" + s +".txt", error => {
    		 if (!error) {
-			console.log('good');
 			fs.readFile('/home/pi/Documents/StockTracker/ShareData/' + s +'.txt', (err, data) => {
 
 				console.log(data);
@@ -47,30 +46,12 @@ function printstock(s, p, r, d) {
 		    rl.question("You do not currently have an entry for the number of shares owned in this company. Create one?(yes/no)",function(q){
 			if(q == "yes"){
 				rl.question("How Many Shares Do You Own in " + s + ":", function(num){
-					/*
-					var writeStream = fs.createWriteStream('/ShareData/' + s + ".txt");
 
-					writeStream.write(num, 'utf8')
-					writeStream.on('finish', () => {
-  					  console.log('Data Entry Complete.');
-					});
 
-					writeStream.end();
-				 	printstock(s,p,r,d);
-					*/
-                                        fs.closeSync(fs.openSync('/ShareData/' + s + '.txt','w'))
-					fs.writeFile('/ShareData/' + s + '.txt', num, 'utf8', function(){
-						printstock(s,p,r,d);
+					fs.writeFileSync('ShareData/' + s + '.txt', num, 'utf8');
 
-					});
-				/*
-					fs.writeFile('/ShareData/' + s + '.txt', num, (err) => {
-						if(err) throw err;
+				        printstock(s,p,r,d);
 
-						printstock(s,p,r,d);
-					});
-
-				*/
 				});
 			}
 			else if(q == "no")
@@ -131,6 +112,7 @@ function conoutmult() {
 
 		});
 	}
+       return;
 }
 
 
