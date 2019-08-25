@@ -1,48 +1,54 @@
-var exec = require('child_process').exec;
-var https = require('https');
-var colors = require('ansi-256-colors');
+var https = require('https');  //Used to Make Requests to yahoo finance
+var colors = require('ansi-256-colors'); //Used to add color to text printed in console
+
+//The API we are making requests to
 var command = "https:\/\/query1.finance.yahoo.com/v7/finance/quote?fields=symbol,longName,shortName,regularMarketPrice,regularMarketTime,regularMarketChange,regularMarketDayHigh,regularMarketDayLow,regularMarketPrice,regularMarketOpen,regularMarketVolume,averageDailyVolume3Month,marketCap,bid,ask,dividendYield,dividendsPerShare,exDividendDate,trailingPE,priceToSales,tarketPricecMean&formatted=false&symbols="
-var express = require('express');
-var app = express();
-var conout = true;
-var currentRequest = false;
-if(process.argv[2] == null) conout = false;
+var express = require('express'); //Used to create the Server
+var app = express(); 
+var conout = true;  //The variable that decides wheather to do the server or print to the console
 
-console.log(process.argv);
+if(process.argv[2] == null) conout = false; //If the command entered doesn't have the paramaters needed to print to the console, don't print to the console
 
-function isPositive(num) {
-  // if something is true return true; else return false is redundant.
-  return num >= 0;
-}
+
+//////Going to be used for colors later
+//function isPositive(num) {
+//  return num >= 0;
+//}
+//////////////////////////////////////
 
 function serve(){
-	
 
-	app.listen(8080);
-	app.get('/', function(req, res){
+	app.listen(8080); //Start Listening For Request On Port 8080
 
-   		res.sendFile(__dirname + "/index.html");
+	console.log("StockTracker Listening on port 8080"); //Notify User That the Server is Up
+
+	app.get('/', function(req, res){  //If Someone Requests For The Main Page ...
+
+   		res.sendFile(__dirname + "/index.html"); //Serve Index.html
 
 	});
-	app.get('/request', function(req, res) {
-		currentRequest = true;
+	app.get('/request', function(req, res) { //If stock information is requested ...
 
-		var s = req.query.symbol;
+		var s = req.query.symbol; //Get the symbol that the client requested data on
+
+		//Retrieve the data 
 		getData(0, s, function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
-			if(currentRequest == false) return;
 
+			//Set the Text type to plaintext so we can use "\n"
 			res.setHeader('content-type', 'text/plain');
 
+			//Send The Stock Information to the Client
 			res.send("STOCK REPORT - " + symbol + "(" + short + ")\n" + "MARKET PRICE : " + price + "\n" + "OPEN : " + open + "\n" + "HIGH : " + high + "\n" +"P/E RATIO : " + pe + "\n" + "MARKET CAP : " + mktcp + "\n" +"MARKET CHANGE(DAY) : " + regmktch + "\n" +"ASK: " + ask + "\n" + "BID : " + bid + "\n" +   "MARKET VOLUME : " + mktvol + "\n" +       "PREVIOUS CLOSE PRICE : " + prevClose  + "\n" +      "DIVIDENDS PER SHARE : " + divps + "\n" +     "REVENUE : " + rev + "\n" +      "SHARES OUTSTANDING : " + sO + "\n" +    "TRADABLE : " + tradable + "\n" +     "------HISTORICAL-------"  + "\n" +     "FIFTY-TWO WEEK HIGH : " + ftwh + "\n" +      "FIFTY-TWO WEEK HIGH CHANGE : " + ftwhc + "\n" +      "FIFTY-TWO WEEK HIGH CHANGE PERCENT : " + ftwhcp + "\n" +    "FIFTY-TWO WEEK LOW : " + ftwl + "\n" +    "FIFTY-TWO WEEK LOW CHANGE : " + ftwlc  + "\n" +  "FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
-		});	
+		});
 	});
-	
 }
 
 function conoutf() {
-	
-	getData(0, data, function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
-	
+
+	//Get the data from the parameters in the console
+	getData(0, process.argv[3].toString(), function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+
+			  //Print all the information to the console
 			  console.log("STOCK REPORT - " + symbol + "(" + short + ")");
 			  console.log("MARKET PRICE : " + price);
 			  console.log("OPEN : " + open);
@@ -67,20 +73,23 @@ function conoutf() {
 			  console.log("FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
 	});
 }
-	
-	
-	
+
 function getData(num, symb, callback){
+
+	//Make Request to query1.finance.yahoo.com
 	https.get(command + symb,(resp) =>{
 
-	   let data = '';
+	   let dat = '';  //Variable to store Data
 
-	    // A chunk of data has been recieved.
+	    // When a chunk is recieved ...
 	    resp.on('data', (chunk) => {
-		data += chunk;
+		dat += chunk;  //Add the chunk to the 'dat' variable to store
 	    });
-		
+
+	    //When The Host Stops Sending Chunks ....
 	    resp.on('end', () => {
+
+		    //Seperate the Data into variables
 		    var symbol = JSON.parse(dat).quoteResponse.result[num].symbol;
 		    var short = JSON.parse(dat).quoteResponse.result[num].longName;
 		    var price = JSON.parse(dat).quoteResponse.result[num].regularMarketPrice;
@@ -107,6 +116,7 @@ function getData(num, symb, callback){
 		    var ftwlc =  JSON.parse(dat).quoteResponse.result[num].fiftyTwoWeekLowChange;
 		    var ftwlcp =  JSON.parse(dat).quoteResponse.result[num].fiftyTwoWeekLowChangePercent;
 
+		    //Return the data to the callback function
 		    var result = callback(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp);		    
 	    });	
 	});
@@ -114,13 +124,15 @@ function getData(num, symb, callback){
 
 
 
+//If We Want to print to the console ...
 if (conout == true) {
-	
-	conoutf();
-	
-} else {
-	
-	serve();
+
+    //Print out the data the user requested in the console
+    conoutf();
+
+} else { //If we dont want to print to the console ...
+
+    serve(); //Start The Server
 }
 
 
