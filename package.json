@@ -1,0 +1,23 @@
+{
+  "name": "StockTracker",
+  "version": "0.0.0",
+  "description": "PREREQUISITES  1. pi@raspberry:~# apt install nodejs  2. pi@raspberry:~# apt install npm  3. pi@raspberry:~# npm install express  4. pi@raspberry:~# npm install ansi-256-colors  5. pi@raspberry:~# npm install https",
+  "main": "StockTracker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/willinfante/StockTracker.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/willinfante/StockTracker/issues"
+  },
+  "homepage": "https://github.com/willinfante/StockTracker#readme",
+  "dependencies": {
+    "ansi-256-colors": "^1.1.0",
+    "express": "^4.17.1"
+  }
+}
