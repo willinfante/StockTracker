@@ -58,6 +58,7 @@ function printstock(s, p, r, d) {
 					writeStream.end();
 				 	printstock(s,p,r,d);
 					*/
+                                        fs.closeSync(fs.openSync('/ShareData/' + s + '.txt','w'))
 					fs.writeFile('/ShareData/' + s + '.txt', num, 'utf8', function(){
 						printstock(s,p,r,d);
 
@@ -229,6 +230,5 @@ if (conout == true) {
 
     serve(); //Start The Server
 }
-
 
 
