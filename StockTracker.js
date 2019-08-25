@@ -25,7 +25,9 @@ if(process.argv[2] == "-m") conoutm = true;
 //////////////////////////////////////
 
 function printstock(s, p, r, d) {
-	if (fs.existsSync('/home/pi/Documents/StockTracker/' + s +'.txt') == true) {
+	
+	fs.access("/home/pi/Documents/StockTracker/" + s +'.txt', error => {
+   		 if (!error) {
 
 			fs.readFile('/home/pi/Documents/StockTracker/' + s +'.txt', (err, data) => {
 				if (err) {
@@ -36,30 +38,31 @@ function printstock(s, p, r, d) {
 				console.log("STOCK       PRICE       CHANGE      VALUE");
 		  		console.log(s + "       " + p + "         " + r + "          " + vall.toString());
 			});
-	} else {
+		
+		} else {
 
-	    rl.question("You do not currently have an entry for the number of shares owned in this company. Create one?(yes/no)",function(q){
-		if(q == "yes"){
-			rl.question("How Many Shares Do You Own in " + s, function(num){
+		    rl.question("You do not currently have an entry for the number of shares owned in this company. Create one?(yes/no)",function(q){
+			if(q == "yes"){
+				rl.question("How Many Shares Do You Own in " + s, function(num){
 
-				fs.writeFile(s + ".txt", num.toString());
-				console.log('fixed.');	
-				printstock(s,p,r,d);
-			});
-		}
-		else if(q == "no");
-		{
-			console.log("Writing This stock to the ignorefile so that this message doesn't show again. If You ever want to change this, then modify the 'ignorefile.txt' file");
-			fs.writeFile("ignorefile.txt", s);
-		}
-		else {
+					fs.writeFile(s + ".txt", num.toString());
+					console.log('fixed.');	
+					printstock(s,p,r,d);
+				});
+			}
+			else if(q == "no");
+			{
+				console.log("Writing This stock to the ignorefile so that this message doesn't show again. If You ever want to change this, then modify the 'ignorefile.txt' file");
+				fs.writeFile("ignorefile.txt", s);
+			}
+			else {
 
-			console.log("Error On Input. Try again.");
-			return;
-		}
-	    });
+				console.log("Error On Input. Try again.");
+				return;
+			}
+		    });
 
-	}
+	});
 }
 
 
