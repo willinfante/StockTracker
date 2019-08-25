@@ -15,7 +15,7 @@ function isPositive(num) {
   return num >= 0;
 }
 
-function getData(num, dat,callback){
+function getData(num, dat, symb, callback){
 
     var symbol = JSON.parse(dat).quoteResponse.result[num].symbol;
     var short = JSON.parse(dat).quoteResponse.result[num].longName;
@@ -48,7 +48,6 @@ function getData(num, dat,callback){
 }
 
 https.get(command + "TSLA",(resp) =>{
-          if(currentRequest == false) return;
 
            let data = '';
 
@@ -56,8 +55,9 @@ https.get(command + "TSLA",(resp) =>{
           resp.on('data', (chunk) => {
                 data += chunk;
           });
-
+         resp.on('end', () => {
          getData(0, data, function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+		  console.log("yeet");
 
          	  if(conout == true) {
 			  console.log("STOCK REPORT - " + symbol + "(" + short + ")");
@@ -91,22 +91,20 @@ https.get(command + "TSLA",(resp) =>{
 			 });
 			 app.get('/request', function(req, res) {
 			  	currentRequest = true;
-	
+
 			  	var s = req.query.symbol;
-			 
+
 			        if(currentRequest == false) return;
-				 
+
 				res.setHeader('content-type', 'text/plain');
 
 				res.send("STOCK REPORT - " + symbol + "(" + short + ")\n" + "MARKET PRICE : " + price + "\n" + "OPEN : " + open + "\n" + "HIGH : " + high + "\n" +"P/E RATIO : " + pe + "\n" + "MARKET CAP : " + mktcp + "\n" +"MARKET CHANGE(DAY) : " + regmktch + "\n" +"ASK: " + ask + "\n" + "BID : " + bid + "\n" +   "MARKET VOLUME : " + mktvol + "\n" +       "PREVIOUS CLOSE PRICE : " + prevClose  + "\n" +      "DIVIDENDS PER SHARE : " + divps + "\n" +     "REVENUE : " + rev + "\n" +      "SHARES OUTSTANDING : " + sO + "\n" +    "TRADABLE : " + tradable + "\n" +     "------HISTORICAL-------"  + "\n" +     "FIFTY-TWO WEEK HIGH : " + ftwh + "\n" +      "FIFTY-TWO WEEK HIGH CHANGE : " + ftwhc + "\n" +      "FIFTY-TWO WEEK HIGH CHANGE PERCENT : " + ftwhcp + "\n" +    "FIFTY-TWO WEEK LOW : " + ftwl + "\n" +    "FIFTY-TWO WEEK LOW CHANGE : " + ftwlc  + "\n" +  "FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
 			});
-		 
 		 }
-		 
-
+              });
         });
    });
-}
+
 
 
 
