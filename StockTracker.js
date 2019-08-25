@@ -57,7 +57,8 @@ https.get(command + "TSLA",(resp) =>{
                 data += chunk;
           });
 
-         getData(0, data, function( symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tra$
+         getData(0, data, function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+
          	  if(conout == true) {
 			  console.log("STOCK REPORT - " + symbol + "(" + short + ")");
 			  console.log("MARKET PRICE : " + price);
