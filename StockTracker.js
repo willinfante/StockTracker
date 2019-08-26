@@ -1,3 +1,4 @@
+var exec = require('child_process').exec; //Used to Print the output to a network printer
 var https = require('https');  //Used to Make Requests to yahoo finance
 var colors = require('ansi-256-colors'); //Used to add color to text printed in console
 var fs = require('fs');
@@ -14,10 +15,15 @@ var express = require('express'); //Used to create the Server
 var app = express(); 
 var conout = false;  //The variable that decides wheather to do the server or print to the console
 var conoutm = false;
-
+var printout = false;
+var servero = false;
 if(process.argv[2] == "-c") conout = true; //If the command entered doesn't have the paramaters needed to print to the console, don't print to the console
 
-if(process.argv[2] == "-m") conoutm = true; 
+if(process.argv[2] == "-m") conoutm = true;
+
+if(process.argv[2] == "-p") printout = true;
+
+if(process.argv[2] == "-s") servero = true;
 //////Going to be used for colors later
 //function isPositive(num) {
 //  return num >= 0;
@@ -115,9 +121,51 @@ function conoutmult() {
        return;
 }
 
+function pout() {
+	getData(0, process.argv[4].toString(), function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+			  var out = "";
+			  //Print all the information to the console
+			  out += "STOCK REPORT - " + symbol + "(" + short + ")\n";
+                          out += "MARKET PRICE : " + price + "\n";
+                          out += "OPEN : " + open + "\n";
+                          out += "HIGH : " + high + "\n";
+                          out += "P/E RATIO : " + pe + "\n";
+                          out += "MARKET CAP : " + mktcp + "\n";
+                          out += "MARKET CHANGEDAY : " + regmktch + "\n";
+                          out += "ASK: " + ask + "\n";
+                          out += "BID : " + bid + "\n";
+                          out += "MARKET VOLUME : " + mktvol + "\n";
+                          out += "PREVIOUS CLOSE PRICE : " + prevClose + "\n";
+                          out += "DIVIDENDS PER SHARE : " + divps + "\n";
+                          out += "REVENUE : " + rev + "\n";
+                          out += "SHARES OUTSTANDING : " + sO + "\n";
+                          out += "TRADABLE : " + tradable + "\n" + "\n";
+                          out += "------HISTORICAL-------" + "\n";
+                          out += "FIFTY-TWO WEEK HIGH : " + ftwh + "\n";
+                          out += "FIFTY-TWO WEEK HIGH CHANGE : " + ftwhc + "\n";
+                          out += "FIFTY-TWO WEEK HIGH CHANGE PERCENT : " + ftwhcp + "\n";
+                          out += "FIFTY-TWO WEEK LOW : " + ftwl + "\n";
+                          out += "FIFTY-TWO WEEK LOW CHANGE : " + ftwlc + "\n";
+                          out += "FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp + "\n";
 
+
+
+
+
+
+			  fs.writeFileSync('o.txt', out, 'utf8');
+			  exec('cat o.txt | telnet ' + process.argv[3].toString() + ' 9100', function(err, stdout, stderr) {
+			  //execSync('cat o.txt | telnet ' + process.argv[3].toString() + ' 9100');
+			  	fs.unlinkSync('o.txt');
+
+			  });
+			  return 0;
+	});
+
+
+
+}
 function conoutf() {
-
 	//Get the data from the parameters in the console
 	getData(0, process.argv[3].toString(), function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
 
@@ -145,6 +193,7 @@ function conoutf() {
 			  console.log("FIFTY-TWO WEEK LOW CHANGE : " + ftwlc);
 			  console.log("FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
 	});
+	
 }
 
 function getData(num, symb, callback){
@@ -204,13 +253,21 @@ if (conout == true) {
     conoutf();
 
 } else if(conoutm == true) {
-	
+
      //Print out multiple Stocks
      conoutmult();
- 	
-} else { //If we dont want to print to the console ...
+
+} else if(printout == true) { 
+
+     //Print output to network printer
+     pout();
+} else if(servero == true) {
 
     serve(); //Start The Server
+} else {
+    console.log("Invalid Argument.")
+
 }
 
 
+return "done";
