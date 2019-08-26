@@ -1,4 +1,4 @@
-var exec = require('child_process').exec; //Used to Print the output to a network printer
+gvar exec = require('child_process').exec; //Used to Print the output to a network printer
 var https = require('https');  //Used to Make Requests to yahoo finance
 var colors = require('ansi-256-colors'); //Used to add color to text printed in console
 var fs = require('fs');
