@@ -36,6 +36,12 @@ Go to http://[YOUR-IP]:8080/ and enter a stock symbol
 
 You Can print out as many stocks as you want.
 
+#### To Make an entry into the share number files
+
+``` pi@raspberry:~/StockTracker$ node StockTracker.js -e [STOCK] [# OF SHARES]```
+
+This allows you to see how much money the shares you 0wn are worth.
+
 #### If you forget how to do something
 
 ``` pi@raspberry:~/StockTracker$ node StockTracker.js -h```
