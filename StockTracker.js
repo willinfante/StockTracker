@@ -29,7 +29,7 @@ if(process.argv[2] == "-s") servero = true;
 
 if(process.argv[2] == "-h") helpo = true;
 
-if(process.argv[2] == "-e") eEntry = true
+if(process.argv[2] == "-e") eEntry = true;
 //////Going to be used for colors later
 //function isPositive(num) {
 //  return num >= 0;
@@ -49,47 +49,13 @@ function help(){
 }
 
 function printstock(s, p, r, d) {
-	
-	fs.access("/home/pi/Documents/StockTracker/ShareData/" + s +".txt", error => {
-   		 if (!error) {
-			fs.readFile('/home/pi/Documents/StockTracker/ShareData/' + s +'.txt', (err, data) => {
+	fs.readFile('/home/pi/Documents/StockTracker/ShareData/' + s +'.txt', (err, data) => {
+		if(!data)  console.log("\x1b[41m%s\x1b[0m", "You do not have an entry for the number of shares you own in this stock. Make one by using -e(-h for more info on parameters");
+  		if(data) var vall = parseInt(p) * parseInt(data);
 
-				console.log(data);
-				if (err) {
-	    				console.error(err);
-	    				return;
-	  			}
-	  			var vall = parseInt(p) * parseInt(data);
- 				console.log(vall);
-				console.log("STOCK       PRICE       CHANGE      VALUE");
-		  		console.log(s + "       " + p + "         " + r + "          " + vall.toString());
-			});
-		
-		} else {
+		if(data) console.log(s + "       " + p + "         " + r + "          " + vall.toString() + "\n");
+                if(!data) console.log(s + "       " + p + "         " + r + "\n");
 
-		    rl.question("You do not currently have an entry for the number of shares owned in this company. Create one?(yes/no)",function(q){
-			if(q == "yes"){
-				rl.question("How Many Shares Do You Own in " + s + ":", function(num){
-
-
-					fs.writeFileSync('ShareData/' + s + '.txt', num, 'utf8');
-
-				        printstock(s,p,r,d);
-
-				});
-			}
-			else if(q == "no")
-			{
-				console.log("Writing This stock to the ignorefile so that this message doesn't show again. If You ever want to change this, then modify the 'ignorefile.txt' file");
-				fs.writeFile("ignorefile.txt", s);
-			}
-			else {
-
-				console.log("Error On Input. Try again.");
-				return;
-			}
-		    });
-		}
 	});
 }
 
@@ -110,7 +76,7 @@ function serve(){
 		var s = req.query.symbol; //Get the symbol that the client requested data on
 
 		//Retrieve the data 
-		getData(0, s, function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+		getData(0, s, function(symbol, short, price, open, high, low, prevClose, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
 
 			//Set the Text type to plaintext so we can use "\n"
 			res.setHeader('content-type', 'text/plain');
@@ -123,34 +89,33 @@ function serve(){
 
 function conoutmult() {
 	var array = [];
-
+	console.log("STOCK       PRICE       CHANGE      VALUE");
         for (var i = 3; i < process.argv.length; i++){
 		array.push(process.argv[i]);
 	}
 	for(var symb of array){
-		console.log(symb);
 		//Get the data from the parameters in the console
-		getData(0, symb, function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+		getData(0, symb, function(symbol, short, price, open, high, low, prevClose, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
 
 			    printstock(symbol, price, regmktch,	divps);
-
 		});
 	}
-       return;
 }
 
 function createEntry(stock, shareNum){
 
      fs.writeFileSync('ShareData/' + stock + '.txt', shareNum, 'utf8');
+     process.exit();
 
 }
 function pout() {
-	getData(0, process.argv[4].toString(), function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+	getData(0, process.argv[4].toString(), function(symbol, short, price, open, high, low, prevClose,  pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
 		fs.readFile('/home/pi/Documents/StockTracker/ShareData/' + process.argv[4].toString() +'.txt', (err, data) => {
 
-			  if(err) console.log("You have not made an entry for this stock. Create one using -e [STOCK] [SHARES], or do -f if you don't 0wn any.");
-                          var vall = parseInt(price)  * parseInt(data);
+			  if(!data) console.log("\x1b[41m%s\x1b[0m","You have not made an entry for this stock. Create one using -e [STOCK] [SHARES], or do -f if you don't 0wn any.");
+                          if(data) var vall = parseInt(price)  * parseInt(data);
 			  var out = "";
+
 			  //Print all the information to the console
 			  out += "STOCK REPORT - " + symbol + "(" + short + ")\n";
                           out += "MARKET PRICE : " + price + "\n";
@@ -174,11 +139,12 @@ function pout() {
                           out += "FIFTY-TWO WEEK LOW : " + ftwl + "\n";
                           out += "FIFTY-TWO WEEK LOW CHANGE : " + ftwlc + "\n";
                           out += "FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp + "\n";
-			  out += "YOUR SHARE VALUE : " + vall;
+			  if(data) out += "YOUR SHARE VALUE : " + vall;
 
 			  fs.writeFileSync('o.txt', out, 'utf8');
 			  exec('cat o.txt | telnet ' + process.argv[3].toString() + ' 9100', (err,stdout,stderr) => {
 				  fs.unlinkSync('o.txt');
+				  process.exit();
 			  });
 		});
 	});
@@ -188,11 +154,15 @@ function pout() {
 }
 function conoutf() {
 	//Get the data from the parameters in the console
-	getData(0, process.argv[3].toString(), function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
-	  	fs.readFile('/home/pi/Documents/StockTracker/ShareData/' + process.argv[3].toString() +'.txt', (err, data) => {
-			  if(err) console.log("You Have Not Made an entry for this stock yet. use -e [STOCK] [SHARES]");
-			  var vall = parseInt(price)  * parseInt(data);
 
+	 getData(0, process.argv[3].toString(), function(symbol, short, price, open, high, low, prevClose,  pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+
+		fs.readFile('/home/pi/Documents/StockTracker/ShareData/' + process.argv[3].toString() +'.txt', (err, data) => {
+
+			  if(!data) console.log("\x1b[41m%s\x1b[0m", "You have no entry for the number of shares you 0wn in this company. Make one by using -e(-h for more info)");
+			 if(data){
+			  	var vall = parseInt(price)  * parseInt(data);
+			  }
 			  //Print all the information to the console
 			  console.log("STOCK REPORT - " + symbol + "(" + short + ")");
 			  console.log("MARKET PRICE : " + price);
@@ -216,7 +186,9 @@ function conoutf() {
 			  console.log("FIFTY-TWO WEEK LOW : " + ftwl);
 			  console.log("FIFTY-TWO WEEK LOW CHANGE : " + ftwlc);
 			  console.log("FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
-			  console.log("YOUR SHARE VALUE : " + vall);
+			 if(data){ console.log("YOUR SHARE VALUE : " + vall); }
+
+			  process.exit();
 		});
 	});
 	
@@ -245,7 +217,6 @@ function getData(num, symb, callback){
 		    var high = JSON.parse(dat).quoteResponse.result[num].regularMarketDayHigh;
 		    var low = JSON.parse(dat).quoteResponse.result[num].regularMarketDayLow;
 		    var prevClose =  JSON.parse(dat).quoteResponse.result[num].regularMarketPreviousClose;
-		    var ask = JSON.parse(dat).quoteResponse.result[num].bid;
 		    var pe = JSON.parse(dat).quoteResponse.result[num].trailingPE;
 		    var mktcp = JSON.parse(dat).quoteResponse.result[num].marketCap;
 		    var regmktch = JSON.parse(dat).quoteResponse.result[num].regularMarketChange;
@@ -265,7 +236,7 @@ function getData(num, symb, callback){
 		    var ftwlcp =  JSON.parse(dat).quoteResponse.result[num].fiftyTwoWeekLowChangePercent;
 
 		    //Return the data to the callback function
-		    var result = callback(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp);		    
+		    var result = callback(symbol, short, price, open, high, low, prevClose,  pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp);		    
 	    });	
 	});
 }
@@ -299,9 +270,9 @@ if (conout == true) {
     help();
 
 } else {
-    console.log("Invalid Argument.")
+    console.log("Invalid Argument.");
 
 }
 
 
-return;
+//process.exit();
