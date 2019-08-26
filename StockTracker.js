@@ -18,7 +18,7 @@ var conoutm = false;
 var printout = false;
 var servero = false;
 var eEntry = false;
-
+var helpo = false;
 if(process.argv[2] == "-c") conout = true; //If the command entered doesn't have the paramaters needed to print to the console, don't print to the console
 
 if(process.argv[2] == "-m") conoutm = true;
@@ -26,6 +26,8 @@ if(process.argv[2] == "-m") conoutm = true;
 if(process.argv[2] == "-p") printout = true;
 
 if(process.argv[2] == "-s") servero = true;
+
+if(process.argv[2] == "-h") helpo = true;
 
 if(process.argv[2] == "-e") eEntry = true
 //////Going to be used for colors later
@@ -215,6 +217,7 @@ function conoutf() {
 			  console.log("FIFTY-TWO WEEK LOW CHANGE : " + ftwlc);
 			  console.log("FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
 			  console.log("YOUR SHARE VALUE : " + vall);
+		});
 	});
 	
 }
@@ -291,7 +294,7 @@ if (conout == true) {
 
     createEntry(process.argv[3], process.argv[4]);
 
-} else if(help == true) {
+} else if(helpo == true) {
 
     help();
 
@@ -301,4 +304,4 @@ if (conout == true) {
 }
 
 
-return "done";
+return;
