@@ -17,6 +17,8 @@ var conout = false;  //The variable that decides wheather to do the server or pr
 var conoutm = false;
 var printout = false;
 var servero = false;
+var eEntry = false;
+
 if(process.argv[2] == "-c") conout = true; //If the command entered doesn't have the paramaters needed to print to the console, don't print to the console
 
 if(process.argv[2] == "-m") conoutm = true;
@@ -24,11 +26,19 @@ if(process.argv[2] == "-m") conoutm = true;
 if(process.argv[2] == "-p") printout = true;
 
 if(process.argv[2] == "-s") servero = true;
+
+if(process.argv[2] == "-e") eEntry = true
 //////Going to be used for colors later
 //function isPositive(num) {
 //  return num >= 0;
 //}
 //////////////////////////////////////
+
+function help(){
+
+
+
+}
 
 function printstock(s, p, r, d) {
 	
@@ -121,8 +131,17 @@ function conoutmult() {
        return;
 }
 
+function createEntry(stock, shareNum){
+
+     fs.writeFileSync('ShareData/' + stock + '.txt', shareNum, 'utf8');
+
+}
 function pout() {
 	getData(0, process.argv[4].toString(), function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+		fs.readFile('/home/pi/Documents/StockTracker/ShareData/' + process.argv[4].toString() +'.txt', (err, data) => {
+
+			  if(err) console.log("You have not made an entry for this stock. Create one using -e [STOCK] [SHARES], or do -f if you don't 0wn any.");
+                          var vall = parseInt(price)  * parseInt(data);
 			  var out = "";
 			  //Print all the information to the console
 			  out += "STOCK REPORT - " + symbol + "(" + short + ")\n";
@@ -147,19 +166,13 @@ function pout() {
                           out += "FIFTY-TWO WEEK LOW : " + ftwl + "\n";
                           out += "FIFTY-TWO WEEK LOW CHANGE : " + ftwlc + "\n";
                           out += "FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp + "\n";
-
-
-
-
-
+			  out += "YOUR SHARE VALUE : " + vall;
 
 			  fs.writeFileSync('o.txt', out, 'utf8');
-			  exec('cat o.txt | telnet ' + process.argv[3].toString() + ' 9100', function(err, stdout, stderr) {
-			  //execSync('cat o.txt | telnet ' + process.argv[3].toString() + ' 9100');
-			  	fs.unlinkSync('o.txt');
-
+			  exec('cat o.txt | telnet ' + process.argv[3].toString() + ' 9100', (err,stdout,stderr) => {
+				  fs.unlinkSync('o.txt');
 			  });
-			  return 0;
+		});
 	});
 
 
@@ -168,6 +181,9 @@ function pout() {
 function conoutf() {
 	//Get the data from the parameters in the console
 	getData(0, process.argv[3].toString(), function(symbol, short, price, open, high, low, prevClose, ask, pe, mktcp, regmktch, mktvol, state, bid, ask, divps, rev, sO, tradable, ftwhcp, ftwl, ftwh, ftwhc, ftwlc, ftwlcp) {
+	  	fs.readFile('/home/pi/Documents/StockTracker/ShareData/' + process.argv[3].toString() +'.txt', (err, data) => {
+			  if(err) console.log("You Have Not Made an entry for this stock yet. use -e [STOCK] [SHARES]");
+			  var vall = parseInt(price)  * parseInt(data);
 
 			  //Print all the information to the console
 			  console.log("STOCK REPORT - " + symbol + "(" + short + ")");
@@ -192,6 +208,7 @@ function conoutf() {
 			  console.log("FIFTY-TWO WEEK LOW : " + ftwl);
 			  console.log("FIFTY-TWO WEEK LOW CHANGE : " + ftwlc);
 			  console.log("FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
+			  console.log("YOUR SHARE VALUE : " + vall);
 	});
 	
 }
@@ -264,6 +281,14 @@ if (conout == true) {
 } else if(servero == true) {
 
     serve(); //Start The Server
+} else if(eEntry == true) {
+
+    createEntry(process.argv[3], process.argv[4]);
+
+} else if(help == true) {
+
+    help();
+
 } else {
     console.log("Invalid Argument.")
 
