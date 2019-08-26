@@ -1,6 +1,6 @@
 # StockTracker
 
-## Prerequesites
+## Prerequisites
 
 ``` pi@raspberry:~# npm install ```
 
