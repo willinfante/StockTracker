@@ -130,6 +130,8 @@ function pout() {
                        
 			  //If there is.. find the value
 			  if(data) var vall = parseInt(price)  * parseInt(data);
+			
+			  //Variable to hold information to save to file
 			  var out = "";
 
 			  //Print all the information to the console
@@ -175,6 +177,8 @@ function pout() {
 
 
 }
+
+//Print to console
 function conoutf() {
 	
 	//Get the data from the parameters in the console
@@ -215,12 +219,14 @@ function conoutf() {
 			  console.log("FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
 			 if(data){ console.log("YOUR SHARE VALUE : " + vall); }
 
+			  //Kill the process.
 			  process.exit();
 		});
 	});
 	
 }
 
+//Get Data from finance.yahoo.com
 function getData(num, symb, callback){
 
 	//Make Request to query1.finance.yahoo.com
@@ -273,33 +279,39 @@ function getData(num, symb, callback){
 //If We Want to print to the console ...
 if (conout == true) {
 
-    //Print out the data the user requested in the console
-    conoutf();
+       //Print out the data the user requested in the console
+       conoutf();
 
 } else if(conoutm == true) {
 
-     //Print out multiple Stocks
-     conoutmult();
+       //Print out multiple Stocks
+       conoutmult();
 
 } else if(printout == true) { 
 
-     //Print output to network printer
-     pout();
+       //Print output to network printer
+       pout();
+	
 } else if(servero == true) {
 
-    serve(); //Start The Server
+        //Start The Server
+	serve();
+	
 } else if(eEntry == true) {
 
-    createEntry(process.argv[3], process.argv[4]);
+         //Create Entry in share number files
+         createEntry(process.argv[3], process.argv[4]);
 
 } else if(helpo == true) {
 
-    help();
+           //Print Help
+          help();
 
 } else {
-    console.log("Invalid Argument.");
+
+	//Notify the user the the argument is invalid.
+        console.log("Invalid Argument.");
 
 }
 
 
-//process.exit();
