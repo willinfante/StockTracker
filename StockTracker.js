@@ -1,3 +1,5 @@
+//StockTracker.js (C) William Infante 2019
+
 var exec = require('child_process').exec; //Used to Print the output to a network printer
 var https = require('https');  //Used to Make Requests to yahoo finance
 var colors = require('ansi-256-colors'); //Used to add color to text printed in console
@@ -6,26 +8,25 @@ var fs = require('fs'); //Used for the share value system
 //The API we are making requests to
 var command = "https:\/\/query1.finance.yahoo.com/v7/finance/quote?fields=symbol,longName,shortName,regularMarketPrice,regularMarketTime,regularMarketChange,regularMarketDayHigh,regularMarketDayLow,regularMarketPrice,regularMarketOpen,regularMarketVolume,averageDailyVolume3Month,marketCap,bid,ask,dividendYield,dividendsPerShare,exDividendDate,trailingPE,priceToSales,tarketPricecMean&formatted=false&symbols="
 var express = require('express'); //Used to create the Server
-var app = express(); 
+var app = express(); //Put express into a function
 var conout = false;  //The variable that decides wheather to do the server or print to the console
 var conoutm = false; //Print multiple stocks to console
 var printout = false; //Print output to network printer
 var servero = false; //Set up Server
 var eEntry = false; //Create Share Entry
 var helpo = false; //Help
+
+//Determine what process to call based on arguments
 if(process.argv[2] == "-c") conout = true; //If the command entered doesn't have the paramaters needed to print to the console, don't print to the console
-
 if(process.argv[2] == "-m") conoutm = true; //If We put -m as an argument, print out multiple stocks
-
 if(process.argv[2] == "-p") printout = true;//If We put -p as an argument, print to printer
-
 if(process.argv[2] == "-s") servero = true;//If We put -s as an argument, start server
 if(process.argv[2] == "-h") helpo = true;//If We put -h as an argument, print help
-
 if(process.argv[2] == "-e") eEntry = true;//If We put -e as an argument, create entry
 
 //If the user wants help...
 function help(){
+	
 	//Print Out Help Info
 	console.log("To Run The Server" + "\n" + "pi@raspberry:~/StockTracker$ node StockTracker.js -s\n\n" + "Go to http://[YOUR-IP]:8080/ and enter a stock symbol\n");
 	console.log("To Print to the Console\n" + "pi@raspberry:~/StockTracker$ node StockTracker.js -c [INSERT STOCK SYMBOL HERE]\n");
@@ -217,7 +218,7 @@ function conoutf() {
 			  console.log("FIFTY-TWO WEEK LOW : " + ftwl);
 			  console.log("FIFTY-TWO WEEK LOW CHANGE : " + ftwlc);
 			  console.log("FIFTY-TWO WEEK LOW CHANGE PERCENT : " + ftwlcp);
-			 if(data){ console.log("YOUR SHARE VALUE : " + vall); }
+			  if(data){ console.log("YOUR SHARE VALUE : " + vall); } //Only print share value if you own shares
 
 			  //Kill the process.
 			  process.exit();
@@ -242,7 +243,7 @@ function getData(num, symb, callback){
 	    //When The Host Stops Sending Chunks ....
 	    resp.on('end', () => {
 
-		    //Seperate the Data into variables
+		    //Seperate 'dat' into variables
 		    var symbol = JSON.parse(dat).quoteResponse.result[num].symbol;
 		    var short = JSON.parse(dat).quoteResponse.result[num].longName;
 		    var price = JSON.parse(dat).quoteResponse.result[num].regularMarketPrice;
@@ -304,8 +305,8 @@ if (conout == true) {
 
 } else if(helpo == true) {
 
-           //Print Help
-          help();
+         //Print Help
+         help();
 
 } else {
 
@@ -313,5 +314,3 @@ if (conout == true) {
         console.log("Invalid Argument.");
 
 }
-
-
